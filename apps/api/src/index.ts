@@ -13,22 +13,19 @@ app.use(cors());
 app.use(express.json());
 app.use(requestLogger);
 
-app.get("/", (req: Request, res: Response) => {
-	res.status(200).json({
-		message: "Welcome to snap-to-code API",
-		version: "v1",
-	});
-});
-
-app.get("/health", (req: Request, res: Response) => {
+app.get("/api/health", (req: Request, res: Response) => {
 	res.status(200).json({ status: "API is healthy" });
 });
 
-app.post("/generate", async (req: Request, res: Response, next: NextFunction) => {
+app.get("/api/v1/health", (req: Request, res: Response) => {
+	res.status(200).json({ status: "API is healthy" });
+});
+
+app.post("/api/v1/generate", async (req: Request, res: Response, next: NextFunction) => {
 	const { base64Buffer } = req.body;
 
 	if (!base64Buffer) {
-		res.status(404).json({
+		res.status(400).json({
 			success: false,
 			message: "Image Url Required",
 		});
@@ -43,7 +40,8 @@ app.post("/generate", async (req: Request, res: Response, next: NextFunction) =>
 		const result = await generateCode(mime, base64ImageFile);
 		res.status(200).json({
 			success: true,
-			message: result,
+			message: "Code Generation Successful",
+			code: result,
 		});
 	} catch (error) {
 		res.status(500).json({ success: false, message: error });
