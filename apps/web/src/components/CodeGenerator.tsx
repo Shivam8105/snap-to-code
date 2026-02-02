@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import './CodeGenerator.css'
 import { Navbar } from './Navbar'
-import { fileToBase64, fileToBase64Pure, processImageFile } from '../utils/imageConverter'
+import { processImageFile } from '../utils/imageConverter'
 
 export function CodeGenerator() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
@@ -14,6 +14,13 @@ export function CodeGenerator() {
     const file = e.target.files?.[0]
     if (file) {
       try {
+        console.log('📁 File selected:', {
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          lastModified: new Date(file.lastModified).toLocaleString(),
+        })
+
         // Process the image and get base64
         const imageData = await processImageFile(file)
         
@@ -23,14 +30,23 @@ export function CodeGenerator() {
         // Store pure base64 for API calls
         setImageBase64(imageData.base64Pure)
         
-        console.log('Image uploaded successfully:', {
+        console.log('✅ Image processed successfully')
+        console.log('📊 Image Data:', {
           name: imageData.name,
           type: imageData.type,
           size: imageData.size,
-          base64Pure: imageData.base64Pure.substring(0, 50) + '...', // Log preview
+          lastModified: new Date(imageData.lastModified).toLocaleString(),
         })
+        
+        console.log('🔗 Full Base64 (Data URI) - First 100 chars:', imageData.base64.substring(0, 100) + '...')
+        console.log('🔗 Full Base64 (Data URI) - Length:', imageData.base64.length)
+        
+        console.log('📝 Pure Base64 - First 100 chars:', imageData.base64Pure.substring(0, 100) + '...')
+        console.log('📝 Pure Base64 - Length:', imageData.base64Pure.length)
+        
+        console.log('💾 Ready for API call - Use imageBase64 state:', imageBase64)
       } catch (error) {
-        console.error('Error processing image:', error)
+        console.error('❌ Error processing image:', error)
         alert('Error processing image. Please try again.')
       }
     }
